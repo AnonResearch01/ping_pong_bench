@@ -111,12 +111,7 @@ cd pages
 bundle exec jekyll serve --host 127.0.0.1 --port 8000
 ```
 
-
-## Contribute
-
-Any contributions are welcomed!
-
-### Linting
+## Linting
 ```
 pip3 install mypy flake8 black
 flake8 src
