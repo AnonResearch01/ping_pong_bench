@@ -1,0 +1,92 @@
+<style>
+    h3 { margin: 10px 0px 10px; }
+    h4 { margin: 10px 0px 10px; }
+    hr { margin-top: 30px; margin-bottom: 30px; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid black; padding: 8px; text-align: left; }
+    .average { font-weight: bold; }
+    .dialog { margin-top: 20px; border: 1px solid #ddd; padding: 10px; }
+    .user { color: #6a9fb5; }
+    .assistant { color: #90a959; }
+</style>
+<h3>Scores for <b>{{player.get("short_name", player["model_name"])}}</b> by <b>{{judge.get("short_name", judge["model_name"])}}</b></h3>
+<table id="scoreTable">
+    <tr>
+        <th>Situation</th>
+        {% for char in characters %}
+        <th>{{char}}</th>
+        {% endfor %}
+        <th>Average by situation</th>
+    </tr>
+
+    {% for situation in situations %}
+        <tr>
+        <td>{{situation | truncate(50)}}</td>
+        {% for char in characters %}
+        <td>
+            {% if scores[situation][char] and keys[situation][char] %}
+                 <a href="#" onclick="showDialog{{judge["model_name"] | replace("-", "_")}}(event, '{{keys[situation][char]}}')">{{scores[situation][char] | round(2, 'floor')}}</a>
+            {% elif keys[situation][char] %}
+                 <a href="#" onclick="showDialog{{judge["model_name"] | replace("-", "_")}}(event, '{{keys[situation][char]}}')">REF</a>
+            {% else %}
+                 -
+            {% endif %}
+        </td>
+        {% endfor %}
+        <td class='average'>{% if not situation_averages[situation] %}REF{% else %}{{situation_averages[situation] | round(2, 'floor')}}{% endif %}</td>
+        </tr>
+    {% endfor %}
+
+    <tr>
+    <td class='average'>Average by character</td>
+    {% for char in characters %}
+       <td class='average'>{% if not character_averages[char] %}REF{% else %}{{character_averages[char] | round(2, 'floor')}}{% endif %}</td>
+    {% endfor %}
+    <td class='average'>{{overall_average | round(2, 'floor')}}</td>
+    </tr>
+</table>
+<h4>Judge</h4><code>{{judge|tojson}}</code>"
+<h4>Player</h4><code>{{player|tojson}}</code>
+{% if interrogator %}<h4>Interrogator</h4><code>{{interrogator|tojson}}</code>{% endif %}
+<div id="dialogContainer_{{judge["model_name"] | replace("-", "_") }}" class="dialog" hidden></div>
+<script>
+    const dialogs_{{judge["model_name"] | replace("-", "_") }} = {{dialogs}}
+
+        function showDialog{{judge["model_name"] | replace("-", "_") }}(e, key) {
+            e = e || window.event;
+            e.preventDefault();
+            window.location.hash = "#" + key;
+            const dialog = dialogs_{{judge["model_name"] | replace("-", "_") }}[key];
+            const messages = dialog["messages"];
+            var container = document.getElementById('dialogContainer_{{judge["model_name"] | replace("-", "_") }}');
+            if (!dialog) {
+                container.innerHTML = 'Dialog not found';
+                return;
+            }
+            let dialogHtml = '';
+            dialogHtml += '<p>Player's character: ' + dialog["character"] + '</p>';
+            dialogHtml += '<p>Interrogator's situation: ' + dialog["situation"] + '</p>';
+            dialogHtml += '<h4>Dialog</h4>';
+            for (const message of messages) {
+                const newRole = (message.role == "assistant") ? "player" : "interrogator";
+                dialogHtml += '<p class="' + message.role + '"><strong>' + newRole + ':</strong> ' + message.content.replace('\n', '<br><br>') + '</p><br>';
+            }
+            dialogHtml += '<h4>Scores</h4>';
+            dialogHtml += '<code>' + JSON.stringify(dialog["scores"]) + '</code>';
+            container.innerHTML = dialogHtml;
+            container.removeAttribute("hidden");
+            container.scrollIntoView();
+        }
+    function getKeyFromHash() {
+        const hash = window.location.hash;
+        return hash.substring(1);
+    }
+    function handleHashChange() {
+        const key = getKeyFromHash();
+        if (key) {
+            showDialog{{judge["model_name"] | replace("-", "_") }}(undefined, key);
+        }
+    }
+    document.addEventListener('DOMContentLoaded', handleHashChange);
+</script>
+<hr>
