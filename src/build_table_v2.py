@@ -20,7 +20,7 @@ SELECTOR_CODE = """
 <div class="selector-container" style="display: flex; align-items: center;">
   <label for="weightSelector"><sup>Score weights:</sup> </label>
   <select id="weightSelector" onchange="updateVisibility()" class="weight-select">
-    <option value="0.333_0.333_0.333" selected>character: 1, entertain: 1, fluency: 1</option>
+    <option value="0.3333_0.3333_0.3333" selected>character: 1, entertain: 1, fluency: 1</option>
     <option value="0.25_0.5_0.25">character: 1, entertain: 2, fluency: 1</option>
     <option value="0.5_0.25_0.25">character: 2, entertain: 1, fluency: 1</option>
     <option value="0.25_0.25_0.5">character: 1, entertain: 1, fluency: 2</option>
@@ -41,7 +41,7 @@ SELECTOR_CODE = """
     background: #2D2D2D;
     color: #B5B5B5;
   }
-  sub[data-weight]:not([data-weight="0.333_0.333_0.333"]) {
+  sub[data-weight]:not([data-weight="0.3333_0.3333_0.3333"]) {
     display: none;
   }
   </style>
@@ -147,7 +147,7 @@ def build_table(
     model_weights = {"claude-3-5-sonnet-20240620": 1.0, "gpt-4o": 1.0}
     metric_header = ("in_character", "entertaining", "fluency")
     metric_weights = [
-        (0.33333, 0.33333, 0.33333),
+        (0.3333, 0.3333, 0.3333),
         (0.25, 0.5, 0.25),
         (0.5, 0.25, 0.25),
         (0.25, 0.25, 0.5),
