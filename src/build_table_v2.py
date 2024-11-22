@@ -1,6 +1,7 @@
 import os
 import fire  # type: ignore
 import json
+import random
 from typing import Optional, List, Dict, Any, Set, Tuple
 from pathlib import Path
 from datetime import datetime
@@ -316,4 +317,6 @@ def build_table(
 
 
 if __name__ == "__main__":
+    random.seed(1337)
+    np.random.seed(1337)
     fire.Fire(build_table)
