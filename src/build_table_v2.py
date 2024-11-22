@@ -145,10 +145,9 @@ def build_table(
             all_scores[key][judge_name] = output
 
     model_weights = {"claude-3-5-sonnet-20240620": 1.0, "gpt-4o": 1.0}
-    model_weights = {k: v / sum(model_weights.values()) for k, v in model_weights.items()}
     metric_header = ("in_character", "entertaining", "fluency")
     metric_weights = [
-        (0.333, 0.333, 0.333),
+        (0.33333, 0.33333, 0.33333),
         (0.25, 0.5, 0.25),
         (0.5, 0.25, 0.25),
         (0.25, 0.25, 0.5),
@@ -170,12 +169,12 @@ def build_table(
                 example_judge_scores[key][judge_model] = score
                 output_scores[key] = score
             for metric_weight in metric_weights:
+                metric_weight_signature = "_".join(map(str, metric_weight))
                 merged_metric_weight = dict(zip(metric_header, metric_weight))
                 final_score = sum([merged_metric_weight[k] * v for k, v in output_scores.items()])
-                metric_weight_signature = "_".join(map(str, metric_weight))
                 example_judge_scores[f"final_{metric_weight_signature}"][judge_model] = final_score
         for key, scores in example_judge_scores.items():
-            final_score = sum([model_weights[k] * v for k, v in scores.items()])
+            final_score = mean([model_weights[k] * v for k, v in scores.items()])
             final_scores[player_name][key].append(final_score)
 
     players = dict()
