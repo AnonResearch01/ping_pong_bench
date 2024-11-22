@@ -91,8 +91,8 @@ def bootstrap_mean(data: List[float], n_bootstrap: int = 1000) -> Tuple[float, f
     for _ in range(n_bootstrap):
         sample = np.random.choice(data, size=len(data), replace=True)
         means.append(np.mean(sample))
-        point_estimate = np.mean(means)
-        ci_lower, ci_upper = np.percentile(means, [2.5, 97.5])
+    point_estimate = np.mean(means)
+    ci_lower, ci_upper = np.percentile(means, [2.5, 97.5])
     return point_estimate, ci_lower, ci_upper
 
 
